@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-font="sans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speechify - Kokoro AI Speech Reader</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="speechify-app">
+
+    <!-- TOP SPEECHIFY APP BAR -->
+    <header class="speechify-header">
+      <div class="header-left">
+        <div class="speechify-brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5v14M7 8v8M22 10v4M2 10v4"/>
+            </svg>
+          </div>
+          <span class="brand-name">speechify</span>
+          <span class="brand-badge">PRO</span>
+        </div>
+      </div>
+
+      <!-- CENTER VIEW MODE TOGGLES -->
+      <div class="header-center">
+        <div class="mode-pill-group">
+          <button id="readingTabBtn" class="mode-pill active">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Listening
+          </button>
+          <button id="editorTabBtn" class="mode-pill">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Text
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT ACTIONS & APPEARANCE -->
+      <div class="header-right">
+        <!-- Appearance Popover Trigger -->
+        <div class="dropdown-wrap">
+          <button id="appearanceBtn" class="ghost-btn icon-label" title="Reading Appearance">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>Appearance</span>
+          </button>
+          
+          <div id="appearanceMenu" class="popover-menu hidden">
+            <div class="menu-section">
+              <label class="menu-label">Theme</label>
+              <div class="theme-picker">
+                <button class="theme-swatch dark active" data-theme="dark" title="Dark (Midnight)">Dark</button>
+                <button class="theme-swatch sepia" data-theme="sepia" title="Sepia (Warm Book)">Sepia</button>
+                <button class="theme-swatch light" data-theme="light" title="Light (Clean Paper)">Light</button>
+              </div>
+            </div>
+
+            <div class="menu-section">
+              <label class="menu-label">Font Family</label>
+              <div class="font-picker">
+                <button class="font-chip active" data-font="sans">Sans (Inter)</button>
+                <button class="font-chip" data-font="serif">Serif (Book)</button>
+              </div>
+            </div>
+
+            <div class="menu-section">
+              <div class="label-with-counter">
+                <label class="menu-label">Text Size</label>
+                <span id="fontSizeDisplay">22px</span>
+              </div>
+              <div class="font-size-controls">
+                <button id="decreaseFontBtn" class="size-btn">A-</button>
+                <input type="range" id="fontSizeSlider" min="16" max="36" step="2" value="22">
+                <button id="increaseFontBtn" class="size-btn">A+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backend Online Indicator -->
+        <div class="status-indicator-pill" id="connectionBadge" title="Kokoro-82M Backend">
+          <span class="pulse-dot"></span>
+          <span class="status-name" id="connectionText">Online (CPU)</span>
+        </div>
+
+        <button id="serverConfigBtn" class="ghost-btn icon-only" title="Settings">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- BACKEND CONFIG MODAL -->
+    <div id="settingsModal" class="modal-backdrop hidden">
+      <div class="modal-dialog">
+        <div class="modal-top">
+          <h3>Backend Configuration</h3>
+          <button id="closeSettingsBtn" class="close-icon">&times;</button>
+        </div>
+        <div class="modal-content">
+          <label class="field-label">Kokoro Backend API URL
+            <input type="text" id="backendUrlInput" value="http://localhost:8000" class="speechify-input">
+          </label>
+          <label class="field-label">API Key (Optional)
+            <input type="password" id="apiKeyInput" placeholder="Leave empty if AUTH_ENABLED=false" class="speechify-input">
+          </label>
+        </div>
+        <div class="modal-bottom">
+          <button id="testConnectionBtn" class="btn-subtle">Test Status</button>
+          <button id="saveSettingsBtn" class="btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN READING CANVAS (CENTERED SPEECHIFY ARTICLE) -->
+    <main class="speechify-main-container" id="mainScrollContainer">
+      <div class="document-stage">
+
+        <!-- EDITOR VIEW (NOTION/SPEECHIFY CLEAN WRITING CANVAS) -->
+        <div id="editorContainer" class="editor-stage hidden">
+          <textarea id="textInput" placeholder="Type or paste any text or article here... Speechify will read it with ultra-natural Kokoro-82M voices!"></textarea>
+          <div class="editor-stats-bar">
+            <span id="charCount">0 characters</span> &bull; <span id="wordCount">0 words</span> &bull; <span id="estReadTime">~0 min read</span>
+          </div>
+        </div>
+
+        <!-- READING & LISTENING CANVAS (DUAL HIGHLIGHTING) -->
+        <div id="readingContainer" class="reading-stage">
+          <div class="reading-meta-banner">
+            <span class="click-tip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+              Click any word to jump playback instantly
+            </span>
+            <span id="readingProgressPercent">0% read</span>
+          </div>
+
+          <article id="wordsDisplay" class="speechify-article">
+            <!-- Words rendered with dual highlighting -->
+          </article>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- FLOATING SPEECHIFY BOTTOM PLAYER DOCK -->
+    <div class="speechify-floating-dock">
+      <div class="dock-container">
+
+        <!-- LEFT DOCK: VOICE (BELLA ONLY) & SPEED -->
+        <div class="dock-left">
+          <!-- Voice Static Pill (Bella Only) -->
+          <div class="dock-pill voice-pill locked" title="Voice: Bella (Default)">
+            <div class="voice-avatar">B</div>
+            <div class="voice-info">
+              <span class="voice-name">Bella</span>
+              <span class="voice-badge">American</span>
+            </div>
+          </div>
+
+          <!-- Speed Selector Pill -->
+          <div class="dropdown-wrap">
+            <button id="speedPickerBtn" class="dock-pill speed-pill" title="Playback Speed">
+              <span id="speedDisplayVal">1.0x</span>
+            </button>
+
+            <!-- Quick Speed Popover -->
+            <div id="speedMenu" class="speed-dropdown hidden">
+              <div class="speed-slider-wrap">
+                <span class="speed-label">Speed</span>
+                <input type="range" id="speedSlider" min="0.5" max="3.0" step="0.1" value="1.0">
+              </div>
+              <div class="speed-quick-grid">
+                <button class="speed-chip" data-speed="0.8">0.8x</button>
+                <button class="speed-chip active" data-speed="1.0">1.0x</button>
+                <button class="speed-chip" data-speed="1.2">1.2x</button>
+                <button class="speed-chip" data-speed="1.5">1.5x</button>
+                <button class="speed-chip" data-speed="1.8">1.8x</button>
+                <button class="speed-chip" data-speed="2.0">2.0x</button>
+                <button class="speed-chip" data-speed="2.5">2.5x</button>
+              </div>
+            </div>
+          </div>
+        </div>
+          <div class="dropdown-wrap">
+            <button id="speedPickerBtn" class="dock-pill speed-pill">
+              <span id="speedDisplayVal">1.0x</span>
+            </button>
+
+            <!-- Quick Speed Popover -->
+            <div id="speedMenu" class="speed-dropdown hidden">
+              <div class="speed-slider-wrap">
+                <span class="speed-label">Speed</span>
+                <input type="range" id="speedSlider" min="0.5" max="3.0" step="0.1" value="1.0">
+              </div>
+              <div class="speed-quick-grid">
+                <button class="speed-chip" data-speed="0.8">0.8x</button>
+                <button class="speed-chip active" data-speed="1.0">1.0x</button>
+                <button class="speed-chip" data-speed="1.2">1.2x</button>
+                <button class="speed-chip" data-speed="1.5">1.5x</button>
+                <button class="speed-chip" data-speed="1.8">1.8x</button>
+                <button class="speed-chip" data-speed="2.0">2.0x</button>
+                <button class="speed-chip" data-speed="2.5">2.5x</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTER DOCK: REWIND 10s, BIG PLAY/PAUSE, FORWARD 10s -->
+        <div class="dock-center">
+          <!-- Skip Back 10s Button -->
+          <button id="skipBackBtn" class="dock-action-btn enhanced-skip" title="Rewind 10 seconds (←)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 4v6h6"></path>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span class="skip-badge">10</span>
+          </button>
+
+          <!-- BIG SIGNATURE PLAY BUTTON -->
+          <button id="mainPlayPauseBtn" class="speechify-big-play-btn" title="Play / Pause (Spacebar)">
+            <svg id="playIcon" class="icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+            <svg id="pauseIcon" class="icon-pause hidden" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+
+          <!-- Skip Forward 10s Button -->
+          <button id="skipForwardBtn" class="dock-action-btn enhanced-skip" title="Skip forward 10 seconds (→)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 4v6h-6"></path>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            <span class="skip-badge">10</span>
+          </button>
+        </div>
+
+        <!-- RIGHT DOCK: SCRUBBER & DURATION -->
+        <div class="dock-right">
+          <div class="scrub-container">
+            <span id="currentTimeLabel" class="time-readout">0:00</span>
+            <div class="scrub-bar-track" id="scrubBarTrack">
+              <div id="playbackProgressBar" class="scrub-bar-fill" style="width: 0%;"></div>
+            </div>
+            <span id="totalTimeLabel" class="time-readout">-0:00</span>
+          </div>
+
+          <!-- Pipeline status drawer button -->
+          <button id="pipelineToggleBtn" class="dock-pill pipeline-pill" title="Kokoro Streaming Queue">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span id="queueBadge">1 Chunk</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PIPELINE OVERLAY DRAWER -->
+    <div id="pipelineDrawer" class="pipeline-drawer hidden">
+      <div class="drawer-header">
+        <h4>Kokoro Streaming Pipeline</h4>
+        <button id="closePipelineBtn" class="close-icon">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <p class="drawer-sub">Audio synthesized ahead in real-time as you listen.</p>
+        <div id="chunkList" class="pipeline-chunk-list">
+          <!-- Chunk status badges -->
+        </div>
+      </div>
+    </div>
+
+    <!-- HIDDEN AUDIO ELEMENT -->
+    <audio id="audioElement" preload="auto"></audio>
+
+    <!-- TOAST / STATUS NOTIFIER -->
+    <div id="toastMessage" class="toast hidden">Ready</div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
